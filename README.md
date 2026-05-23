@@ -93,10 +93,10 @@ Define plan reviewers.
 2. Define plan safty critic.
 
 ### Plan Feasibility Checker
-    1. Checks whether the plan is feasible.
-    2. Checks whether the plan is able to satisfy the user query.
-    3. Checks whether the plan is minimal.
+1. Checks whether the plan is feasible.
+2. Checks whether the plan is able to satisfy the user query.
+3. Checks whether the plan is minimal.
 
 ### Plan Safty Critic
-    1. Checks whether the plan in itself can become harmful to the user/system.
-    2. Checks whether any step within the plan can become harmful to the user/system.
+1. Checks whether the plan in itself can become harmful to the user/system.
+2. Checks whether any step within the plan can become harmful to the user/system.
