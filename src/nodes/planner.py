@@ -1,10 +1,10 @@
 from state import AgentState
 from model import call_llm
-from tools.tool_registry_reader import get_tools_info
+from helper_functions import read_tool_registry
 
 def planner(state:AgentState):
     user_query = state['input']['user_query']
-    tool_hints = get_tools_info()
+    tool_hints = read_tool_registry()
 
     planner_system_prompt = f"""
     You are a planning agent in a plan-execute system for a smart CLI assistant. Your only job is to decompose a goal into an ordered list of discrete, executable tasks.
@@ -21,7 +21,12 @@ def planner(state:AgentState):
         {{
             "id": "t1",
             "description": "<specific, actionable description>",
-            "tool_hint": "<{tool_hints}>",
+            "tool_hint": [{{
+                "name"= "shell_tool",
+                "parameters"={{"command"=<command>, 
+                    "arguments"=<arguments>}}
+                }}],
+            
             "depends_on": [],
             "expected_output": "<concrete description of what 'done' looks like>"
         }}

@@ -79,3 +79,9 @@ The system prompt is doing most of the work. It needs four things:
     8. Never combine planning with execution. Return the plan only.
     """
 
+## Day 5
+Define the Tools
+
+1. Create the necessary tools.
+2. Create a markdown (.md) file which contains all the necessary metadata regarding all the tools. This .md file will be used by the planner for getting the details about the tools.
+3. Create a tool_registry_reader python file with a get_tools_info function which can provide the contents of the .md file when called.
