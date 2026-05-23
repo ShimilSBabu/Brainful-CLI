@@ -85,3 +85,18 @@ Define the Tools
 1. Create the necessary tools.
 2. Create a markdown (.md) file which contains all the necessary metadata regarding all the tools. This .md file will be used by the planner for getting the details about the tools.
 3. Create a tool_registry_reader python file with a get_tools_info function which can provide the contents of the .md file when called.
+
+## Day 6
+Define plan reviewers.
+
+1. Define plan feasibility checker.
+2. Define plan safty critic.
+
+### Plan Feasibility Checker
+    1. Checks whether the plan is feasible.
+    2. Checks whether the plan is able to satisfy the user query.
+    3. Checks whether the plan is minimal.
+
+### Plan Safty Critic
+    1. Checks whether the plan in itself can become harmful to the user/system.
+    2. Checks whether any step within the plan can become harmful to the user/system.
