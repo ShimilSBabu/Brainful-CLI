@@ -86,6 +86,107 @@ Define the Tools
 2. Create a markdown (.md) file which contains all the necessary metadata regarding all the tools. This .md file will be used by the planner for getting the details about the tools.
 3. Create a tool_registry_reader python file with a get_tools_info function which can provide the contents of the .md file when called.
 
+### Python Imports Across Subdirectories
+
+#### Setup
+For a structure like:
+```
+dir1/
+    __init__.py
+    dir1.1/
+        __init__.py
+        fileA.py
+    fileB.py
+```
+To use `func` from `fileB.py` inside `fileA.py`:
+
+### Option 1: Relative import (clean, recommended)
+```python
+# in fileA.py
+from ..fileB import func
+```
+Requires `__init__.py` in each directory, and must be run as a module — not directly.
+
+### Option 2: Run as a module (fixes relative import errors)
+```bash
+python -m dir1.dir1_1.fileA
+```
+Running with `-m` from the project root tells Python the package context, making relative imports work.
+
+### Option 3: sys.path hack (when running file directly)
+```python
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from fileB import func
+```
+Manually adds the parent directory to Python's search path. No `__init__.py` needed.
+
+### Option 4: Root-level entry point (for proper apps)
+Create a `main.py` at the project root and run everything from there.
+
+---
+
+### Common Error: `ImportError: attempted relative import with no known parent package`
+**Cause:** Running `fileA.py` directly (e.g. `python fileA.py`) — Python doesn't know it's part of a package.  
+**Fix:** Use `python -m dir1.dir1_1.fileA` instead, or use the `sys.path` hack.
+
+---
+
+### What is `__init__.py`?
+- Marks a directory as a Python **package**, enabling imports from it.
+- Can be completely empty — its presence is what matters.
+- Without it, Python (3.3+) treats the directory as a **namespace package** (implicit), but relative imports still won't work without it.
+
+---
+
+### Dot notation in relative imports
+| Syntax | Meaning |
+|---|---|
+| `from .module import x` | Same directory |
+| `from ..module import x` | One level up |
+| `from ...module import x` | Two levels up |
+
+---
+
+### Absolute vs Relative imports
+
+**Absolute** — full path from project root (preferred for clarity):
+```python
+from dir1.fileB import func
+```
+
+**Relative** — relative to current file's location:
+```python
+from ..fileB import func   # go one level up, then import fileB
+```
+
+Absolute imports work anywhere; relative imports only work inside packages.
+
+---
+
+### Importing the whole module vs a specific function
+```python
+import dir1.fileB                # import whole module
+dir1.fileB.func()                # call with full path
+
+from dir1.fileB import func      # import just the function
+func()                           # call directly
+
+from dir1.fileB import func as f # alias to avoid name conflicts
+f()
+```
+
+---
+
+### Quick decision guide
+| Situation | Best approach |
+|---|---|
+| Proper project with packages | Absolute import + `__init__.py` |
+| Inside a package, sibling/parent file | Relative import (`..`) |
+| Running a file directly | `sys.path` hack |
+| Large app with a clear entry point | `main.py` at root + `python -m` |
+
+
 ## Day 6
 Define plan reviewers.
 

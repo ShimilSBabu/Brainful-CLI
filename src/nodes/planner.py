@@ -1,16 +1,20 @@
-from state import AgentState
-from model import call_llm
-from helper_functions import read_tool_registry
+# import state
+from ..state import AgentState
+from ..model import call_llm
+from ..helper_functions import read_tool_registry
+import json
 
 def planner(state:AgentState):
-    user_query = state['input']['user_query']
+    print("Inside Planner..")
+    # user_query = state['input']['user_query']
+    user_query = state.input.user_query
     tool_hints = read_tool_registry()
 
     planner_system_prompt = f"""
     You are a planning agent in a plan-execute system for a smart CLI assistant. Your only job is to decompose a goal into an ordered list of discrete, executable tasks.
     
     ## Output format
-    Return ONLY a single valid JSON object — no prose, no markdown fences, no explanation.
+    Return ONLY a single valid JSON object — no prose, no markdown fences, no JSON fences, no explanation.
     
     If the goal is clear, return:
     {{
@@ -61,10 +65,16 @@ def planner(state:AgentState):
         }
     ]
     response = call_llm(messages)
+    # print(f"response: {response}")
 
     if response["status"]:
         response_content = response["content"]
-        state.PlannerState = response_content
+        # print(f"response_content({type(response_content)})\n{response_content}")
+        json_start = response_content.find("{")
+        json_end = response_content.rfind("}") + 1
+        response_content_trimmed = response_content[json_start:json_end]
+        # print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
+        state.planner = json.loads(response_content_trimmed)
     else:
         print("Response Status:")
     
