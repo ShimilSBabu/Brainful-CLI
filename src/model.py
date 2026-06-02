@@ -1,6 +1,7 @@
 from langchain_mistralai import ChatMistralAI
 from dotenv import load_dotenv
 import os
+from time import sleep
 
 load_dotenv()
 
@@ -51,3 +52,7 @@ def call_llm(messages, temperature=0.3, max_retries=15, llm_purpose=""):
             
             if response["status"]:
                 return response
+            
+            print(f"response: {response}")
+            sleep(10)
+            retry_count += 1

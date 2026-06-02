@@ -201,3 +201,10 @@ Define plan reviewers.
 ### Plan Safty Critic
 1. Checks whether the plan in itself can become harmful to the user/system.
 2. Checks whether any step within the plan can become harmful to the user/system.
+
+### Plan Reviewer
+Checks the results of Plan Feasibility Checker & Plan Safty Critic and decides whether to;
+
+1. Execute the plan
+2. Pass the current plan and the issues from review to replanner for planning again.
+

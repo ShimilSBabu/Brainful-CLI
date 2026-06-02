@@ -74,8 +74,8 @@ def planner(state:AgentState):
         json_end = response_content.rfind("}") + 1
         response_content_trimmed = response_content[json_start:json_end]
         # print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
-        state.planner = json.loads(response_content_trimmed)
+        state.planner = json.loads(response_content_trimmed)["plan"]
     else:
-        print("Response Status:")
+        print(f"Response Status: {response["status"]}")
     
     return state
