@@ -22,7 +22,8 @@ def get_llm_responce(messages, api_key, model, temperature):
         llm = ChatMistralAI(
             model=model,
             temperature=temperature,
-            api_key=api_key       
+            api_key=api_key,
+            max_tokens=32000
         )
         response = llm.invoke(messages)
         return {"status":1,"content":response.content}

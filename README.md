@@ -208,3 +208,12 @@ Checks the results of Plan Feasibility Checker & Plan Safty Critic and decides w
 1. Execute the plan
 2. Pass the current plan and the issues from review to replanner for planning again.
 
+
+## Day 7
+Define the RePlanner node
+The RePlanner is the one which is called when there are issues with the current plan and the reviewer decided that the current plan must be changed/modified for the safe fullfilment of the user's query.
+The RePlanner takes as input;
+1. User query
+2. The current plan
+3. Reviews from Plan Feasibility Checker & Plan Safty Critic
+4. Human opinions/suggestions if any.

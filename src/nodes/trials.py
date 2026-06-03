@@ -1,8 +1,10 @@
-from .planner import planner
-from ..state import AgentState
-from .plan_feasibilty_checker import plan_feasibility_checker
-from .plan_safty_critic import plan_safty_critic
 from pprint import pprint
+
+from ..state import AgentState
+# from .planner import planner
+# from .plan_feasibilty_checker import plan_feasibility_checker
+# from .plan_safty_critic import plan_safty_critic
+# from .replanner import replanner
 
 state_input_user_query = {"user_query":"Give me all the files starting with 'plan' in this directory."}
 state_planner = {
@@ -28,28 +30,28 @@ state_planner = {
         ]
     }
 
-# state_plan_feasibility_checker = {
-#     'blocking_issues': [],
-#     'confidence': 1.0,
-#     'dimension_scores': {
-#         'ambiguity': 'pass',
-#         'error_handling': 'pass',
-#         'goal_alignment': 'pass',
-#         'halting': 'pass',
-#         'observability': 'pass',
-#         'precondition_validity': 'pass',
-#         'resource_feasibility': 'pass',
-#         'step_sequencing': 'pass'
-#         },
-#     'replanning_prompt': '',
-#     'summary': 'The plan is a single-step shell command to list files starting '
-#                 "with 'plan' in the current directory. It is fully specified, "
-#                 'aligns with the goal, assumes no unconfirmed preconditions, and '
-#                 'has no sequencing, ambiguity, or error-handling issues. The tool '
-#                 "capability ('shell_tool') is assumed available per the task "
-#                 'definition.',
-#     'verdict': 'PASS'
-#     }
+state_plan_feasibility_checker = {
+    'blocking_issues': [],
+    'confidence': 1.0,
+    'dimension_scores': {
+        'ambiguity': 'pass',
+        'error_handling': 'pass',
+        'goal_alignment': 'pass',
+        'halting': 'pass',
+        'observability': 'pass',
+        'precondition_validity': 'pass',
+        'resource_feasibility': 'pass',
+        'step_sequencing': 'pass'
+        },
+    'replanning_prompt': '',
+    'summary': 'The plan is a single-step shell command to list files starting '
+                "with 'plan' in the current directory. It is fully specified, "
+                'aligns with the goal, assumes no unconfirmed preconditions, and '
+                'has no sequencing, ambiguity, or error-handling issues. The tool '
+                "capability ('shell_tool') is assumed available per the task "
+                'definition.',
+    'verdict': 'PASS'
+    }
 
 state_plan_safty_critic = {
     'confidence': 0.95,
@@ -125,11 +127,76 @@ state_plan_safty_critic = {
     'veto_reason': ''
     }
 
-state = AgentState(
-    input=state_input_user_query,
-    planner=state_planner
-    )
+state_replanner={
+    'estimated_steps': 3,
+    'goal_summary': "Safely list all files starting with 'plan' in the explicitly "
+                    'verified current directory.',
+    'tasks': [
+        {
+            'depends_on': [],
+            'description': 'Use the shell tool to retrieve and log the '
+                        'absolute path of the current working directory for '
+                        'verification.',
+            'expected_output': 'A string containing the absolute path of the '
+                            'current working directory (e.g., '
+                            "'/home/user/projects').",
+            'id': 't1',
+            'tool_hint': [
+                {
+                    'name': 'shell_tool',
+                    'parameters': {
+                        'command': 'pwd'
+                        }
+                    }
+                ]
+            },
+        {
+            'depends_on': ['t1'],
+            'description': 'Validate that the retrieved current directory path '
+                        'is explicitly authorized for file listing '
+                        'operations (e.g., by checking against a predefined '
+                        'whitelist of safe paths).',
+            'expected_output': "A boolean confirmation ('true' or 'false') "
+                            'indicating whether the directory is authorized '
+                            'for operations, along with a reason if '
+                            "unauthorized (e.g., {'status': true, 'reason': "
+                            "'Path is whitelisted'} or {'status': false, "
+                            "'reason': 'Path not in authorized list'}).",
+            'id': 't2',
+            'tool_hint': []
+            },
+        {
+            'depends_on': ['t2'],
+            'description': 'Execute a shell command to list all files in the '
+                        "verified current directory that start with 'plan', "
+                        'ensuring the wildcard cannot be misinterpreted.',
+            'expected_output': 'A newline-separated list of filenames in the '
+                            "current directory that begin with 'plan', or "
+                            'an empty string if no such files exist. This '
+                            'output is only valid if the directory was '
+                            'confirmed as authorized in t2.',
+            'id': 't3',
+            'tool_hint': [
+                {
+                    'name': 'shell_tool',
+                    'parameters': {
+                        'arguments': 'plan*',
+                        'command': 'ls'
+                        }
+                    }
+                ]
+            }
+        ]
+    }
 
-plan_safty_critic(state)
+# state = AgentState(
+#     input=state_input_user_query,
+#     planner=state_planner,
+#     plan_feasibility_checker=state_plan_feasibility_checker,
+#     plan_safty_critic=state_plan_safty_critic
+#     )
+
+# plan_safty_critic(state)
 # print(state.plan_feasibility_checker)
-pprint(state.plan_safty_critic)
+# replanner(state)
+pprint(state_replanner)

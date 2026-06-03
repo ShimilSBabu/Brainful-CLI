@@ -6,20 +6,18 @@ from src.nodes.planner import planner
 from src.nodes.plan_feasibilty_checker import plan_feasibility_checker
 from src.nodes.plan_safty_critic import plan_safty_critic
 from src.nodes.plan_reviewer import plan_reviewer
+from src.nodes.replanner import replanner
 from src.nodes.executor import executor
 
 def plan_revise_check(state:AgentState):
     approval = state.plan_reviewer.approval
     if approval:
-        return "executor"
-    return "planner"
+        return "execute"
+    return "replan"
 
 
 def main():
     print("Hello from day-1-strip-to-core!")
-
-    # from src.nodes.planner import planner
-    # state=AgentState()
 
     user_query = input("Hi human, tell me your query: ")
 
@@ -29,21 +27,22 @@ def main():
     graph_builder.add_node("plan_safty_critic_node", plan_safty_critic)
     graph_builder.add_node("plan_reviewer_node", plan_reviewer)
     graph_builder.add_node("executor_node", executor)
+    graph_builder.add_node("replanner_node", replanner)
 
     graph_builder.add_edge(START, "planner_node")
     graph_builder.add_edge("planner_node", "plan_feasibility_checker_node")
     graph_builder.add_edge("planner_node", "plan_safty_critic_node")
     graph_builder.add_edge("plan_feasibility_checker_node", "plan_reviewer_node")
     graph_builder.add_edge("plan_safty_critic_node", "plan_reviewer_node")
-    graph_builder.add_edge("plan_reviewer_node", "planner_node")
+    graph_builder.add_edge("plan_reviewer_node", "replanner_node")
     graph_builder.add_edge("plan_reviewer_node", "executor_node")
 
     graph_builder.add_conditional_edges(
         source="plan_reviewer_node",
         path=plan_revise_check,
         path_map={
-            "planner": "planner_node",
-            "executor": "executor_node"
+            "replan": "replanner_node",
+            "execute": "executor_node"
         }
     )
 
