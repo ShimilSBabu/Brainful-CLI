@@ -142,7 +142,7 @@ OUTPUT SCHEMA (STRICT JSON - YOUR ENTIRE RESPONSE)
   ],
   "constraints_to_inject": [
     {{
-      "after_step_id":  "",
+      "after_step_id":  "" | None,
       "constraint_type": "dry_run" | "human_checkpoint" | "scope_restriction" |
                          "rate_limit" | "data_masking" | "confirmation_prompt" | "other",
       "description":    ""
@@ -189,13 +189,14 @@ USER QUERY
     if response["status"]:
         response_content = response["content"]
         print("\n\nPLAN SAFTY CRITIC")
-        print(f"response_content({type(response_content)})\n{response_content}")
+        # print(f"response_content({type(response_content)})\n{response_content}")
         json_start = response_content.find("{")
         json_end = response_content.rfind("}") + 1
         response_content_trimmed = response_content[json_start:json_end]
-        # print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
-        state.plan_safty_critic = json.loads(response_content_trimmed)
+        print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
+        state_plan_safty_critic = json.loads(response_content_trimmed)
+        print("%"*50)
     else:
         print(f"Response Status: {response["status"]}")
     
-    return state
+    return {"plan_safty_critic":state_plan_safty_critic}

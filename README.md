@@ -212,8 +212,71 @@ Checks the results of Plan Feasibility Checker & Plan Safty Critic and decides w
 ## Day 7
 Define the RePlanner node
 The RePlanner is the one which is called when there are issues with the current plan and the reviewer decided that the current plan must be changed/modified for the safe fullfilment of the user's query.
-The RePlanner takes as input;
+### The RePlanner takes as input;
 1. User query
 2. The current plan
 3. Reviews from Plan Feasibility Checker & Plan Safty Critic
 4. Human opinions/suggestions if any.
+
+
+## Day 8
+Define the Executor node
+The Executor is the one which takes the steps prepared by the planner and then executes them one by one (or parallel if programmed to).
+If the direct tool call fails, it should be redirected to a ReAct agent which can handle tool executions.
+
+* There may be tasks which depends on previous tasks. For those, the results of the previous tasks must be fetched.
+* Tool results could be stored in the state or in a persistant memory.
+* A function or tool which takes the dependancies (task id) as input and gets the result of the dependancies (previous task) is necessary.
+
+### Concerns while building execution node
+1. Must validate whether the tool arguments are having the correct format or not.
+2. Must verify whether the tool execution went correctly or not.
+3. Must asserten whether the tool results are having the right format or not.
+
+### Executor friendly tool returns
+Gave a unified structure for tool returns.
+```python
+return {
+        "status":status,
+        "content":content,
+        "error":str(error),
+        "metadata":{
+            "metadata_1":metadata_1,
+            "metadata_2":metadata_2,
+            "metadata_3":metadata_3
+            }
+        }
+```
+
+This structure will be helpful for automated executors.
+
+### Added a get_react_agent function which can handle tool calls incase normal direct tool call fails.
+* For this react agent, the tool information must be given as 'structuredtools' format.
+```python
+from langchain_core.tools import StructuredTool
+tool = StructuredTool.from_function(
+                func=function_name,
+                name=module_name,
+                description=function_description
+            )
+```
+* But in our case, as the tools are not considered hard coded and are taking an automated approach, we'll use 
+module=import_module(f"src.tools.{module_name}", package=_\_package__)
+    * package=_\_package__ tells Python where the relative import should start from.
+    * In Python, \_\_package__ is a special attribute automatically set by the import system to indicate the package context of a module.It’s mainly used to help Python resolve relative imports correctly. It tells Python the package name that the current module belongs to.
+
+So,
+```python
+tools = []
+file_path = os.path.join(os.getcwd(),"src", "tools")
+for file in os.listdir(path=file_path):
+    if file.endswith(".py"):
+        module_name=file.split(".py")[0]
+        module=import_module(f"src.tools.{module_name}", package=__package__)
+        tool = StructuredTool.from_function(
+            func=module.run,
+            name=module.__name__, # name=module_name in our case
+            description=module.run.__doc__
+        )
+        tools.append(tool)
+```

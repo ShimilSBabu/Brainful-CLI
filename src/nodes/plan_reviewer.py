@@ -1,6 +1,7 @@
 from ..state import AgentState
 
 def plan_reviewer(state:AgentState):
+    print("Inside plan_reviewer..")
     plan_feasibility_confidence_score = state.plan_feasibility_checker.confidence
     plan_safty_confidence_score = state.plan_safty_critic.confidence
     # state.plan_reviewer.plan_review = plan_feasibility_confidence_score

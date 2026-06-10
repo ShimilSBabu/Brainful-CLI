@@ -19,7 +19,7 @@ def plan_revise_check(state:AgentState):
 def main():
     print("Hello from day-1-strip-to-core!")
 
-    user_query = input("Hi human, tell me your query: ")
+    # user_query = input("Hi human, tell me your query: ")
 
     graph_builder = StateGraph(AgentState)
     graph_builder.add_node("planner_node", planner)
@@ -36,6 +36,7 @@ def main():
     graph_builder.add_edge("plan_safty_critic_node", "plan_reviewer_node")
     graph_builder.add_edge("plan_reviewer_node", "replanner_node")
     graph_builder.add_edge("plan_reviewer_node", "executor_node")
+    graph_builder.add_edge("executor_node", END)
 
     graph_builder.add_conditional_edges(
         source="plan_reviewer_node",
@@ -46,6 +47,13 @@ def main():
         }
     )
 
+    graph = graph_builder.compile()
+    state_input_user_query = {"user_query":"Give me all the files ending with '.py' in the 'nodes' folder of the 'src' folder of this directory."}
+    # state_input_user_query = {"user_query":"Give me all the files starting with '.py' in the 'tools' folder of this directory."}
+    state = AgentState(
+        input=state_input_user_query
+        )
+    graph.invoke(state)
 
 if __name__ == "__main__":
     main()

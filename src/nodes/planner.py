@@ -1,4 +1,5 @@
-# import state
+import os
+
 from ..state import AgentState
 from ..model import call_llm
 from ..helper_functions import read_tool_registry
@@ -7,8 +8,12 @@ import json
 def planner(state:AgentState):
     print("Inside Planner..")
     # user_query = state['input']['user_query']
+    os_dict = {
+        'nt':"windows"
+    }
     user_query = state.input.user_query
     tool_hints = read_tool_registry()
+    os_name = os_dict[os.name]
 
     planner_system_prompt = f"""
     You are a planning agent in a plan-execute system for a smart CLI assistant. Your only job is to decompose a goal into an ordered list of discrete, executable tasks.
@@ -52,6 +57,9 @@ def planner(state:AgentState):
     6. Available tools: {tool_hints}.
     7. Do not plan steps that require information you do not have — include a discovery task first, or ask for clarification.
     8. Never combine planning with execution. Return the plan only.
+
+    EXTRA INFORMATION
+    The current system is having the operating system: {os_name}
     """
 
     messages = [
@@ -74,7 +82,14 @@ def planner(state:AgentState):
         json_end = response_content.rfind("}") + 1
         response_content_trimmed = response_content[json_start:json_end]
         # print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
-        state.planner = json.loads(response_content_trimmed)["plan"]
+        plan = json.loads(response_content_trimmed)["plan"]
+        tasks_list= plan["tasks"]
+        return {
+            "planner":plan,
+            "executor":{
+                "tasks":tasks_list
+            }
+        }
     else:
         print(f"Response Status: {response["status"]}")
     

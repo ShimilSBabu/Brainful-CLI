@@ -5,6 +5,7 @@ from ..state import AgentState
 # from .plan_feasibilty_checker import plan_feasibility_checker
 # from .plan_safty_critic import plan_safty_critic
 # from .replanner import replanner
+from .executor import executor
 
 state_input_user_query = {"user_query":"Give me all the files starting with 'plan' in this directory."}
 state_planner = {
@@ -145,7 +146,7 @@ state_replanner={
                 {
                     'name': 'shell_tool',
                     'parameters': {
-                        'command': 'pwd'
+                        'command': 'cd'
                         }
                     }
                 ]
@@ -181,7 +182,7 @@ state_replanner={
                     'name': 'shell_tool',
                     'parameters': {
                         'arguments': 'plan*',
-                        'command': 'ls'
+                        'command': 'dir'
                         }
                     }
                 ]
@@ -189,14 +190,14 @@ state_replanner={
         ]
     }
 
-# state = AgentState(
-#     input=state_input_user_query,
-#     planner=state_planner,
-#     plan_feasibility_checker=state_plan_feasibility_checker,
-#     plan_safty_critic=state_plan_safty_critic
-#     )
+state = AgentState(
+    input=state_input_user_query,
+    planner=state_replanner,
+    plan_feasibility_checker=state_plan_feasibility_checker,
+    plan_safty_critic=state_plan_safty_critic
+    )
 
 # plan_safty_critic(state)
 # print(state.plan_feasibility_checker)
-# replanner(state)
-pprint(state_replanner)
+executor(state)
+# pprint(state)

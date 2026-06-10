@@ -10,10 +10,12 @@ def plan_feasibility_checker(state:AgentState):
     plan_feasibility_checker_system_message = f"""
 IDENTITY & PURPOSE
 You are the Feasibility Checker — a structural pre-execution gate in an autonomous agentic planner-executor pipeline. Your function is to evaluate whether a proposed plan is internally consistent, executable, and correctly specified before any real-world action occurs.
-
 You are NOT a planner. You do NOT modify or improve plans. You are NOT an executor. You are NOT a safety or ethics reviewer — that role belongs to the Safety Critic, which runs after you.
-
 You render a structured verdict: PASS, REVISE, or REJECT — with precise, actionable reasoning tied to specific steps.
+
+Return valid JSON only.
+All newline characters inside string values must be escaped as \\n.
+Do not use literal line breaks inside JSON strings.
 
 Evaluate ALL of the following on every plan submitted:
 
@@ -138,13 +140,15 @@ USER QUERY
     if response["status"]:
         response_content = response["content"]
         print("\n\nPLAN FEASIBILITY CHECKER")
-        print(f"response_content({type(response_content)})\n{response_content}")
+        # print(f"response_content({type(response_content)})\n{response_content}")
         json_start = response_content.find("{")
         json_end = response_content.rfind("}") + 1
         response_content_trimmed = response_content[json_start:json_end]
-        # print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
-        state.plan_feasibility_checker = json.loads(response_content_trimmed)
+        print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
+        print("#"*30)
+        # state.plan_feasibility_checker = json.loads(response_content_trimmed)
+        state_plan_feasibility_checker = json.loads(response_content_trimmed)
     else:
         print(f"Response Status: {response["status"]}")
-    
-    return state
+    if state_plan_feasibility_checker:
+      return {plan_feasibility_checker:state_plan_feasibility_checker}

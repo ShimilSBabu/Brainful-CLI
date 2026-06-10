@@ -93,7 +93,7 @@ class Findings(BaseModel):
     constraint:str=""
 
 class ConstraintsToInject(BaseModel):
-    after_step_id: str = ""
+    after_step_id: str|None = ""
     constraint_type:Literal["dry_run", "human_checkpoint", "scope_restriction", "rate_limit", "data_masking", "confirmation_prompt", "other"] = "rate_limit"
     description:str = ""
 
