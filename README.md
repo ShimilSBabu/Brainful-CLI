@@ -280,3 +280,9 @@ for file in os.listdir(path=file_path):
         )
         tools.append(tool)
 ```
+
+
+## Day 9
+Create a conditional edge which ends the workflow if the plan is completed. Otherwise, the executor must be called again until all the tasks are completed.
+
+Move the conditional edges to a single seperate file inside src. 

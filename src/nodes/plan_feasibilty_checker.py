@@ -144,11 +144,14 @@ USER QUERY
         json_start = response_content.find("{")
         json_end = response_content.rfind("}") + 1
         response_content_trimmed = response_content[json_start:json_end]
-        print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
-        print("#"*30)
+        # print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
+        # print("#"*30)
         # state.plan_feasibility_checker = json.loads(response_content_trimmed)
         state_plan_feasibility_checker = json.loads(response_content_trimmed)
     else:
         print(f"Response Status: {response["status"]}")
     if state_plan_feasibility_checker:
+      print(f"state_plan_feasibility_checker({type(state_plan_feasibility_checker)})\n{state_plan_feasibility_checker}")
+      print("#"*30)
+
       return {plan_feasibility_checker:state_plan_feasibility_checker}

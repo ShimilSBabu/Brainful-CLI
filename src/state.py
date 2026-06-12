@@ -61,10 +61,10 @@ class PlanFeasibilityCheckerState(BaseModel):
         "PASS", 
         "REVISE",
         "REJECT"
-    ] = "REVISE"
+    ] = "PASS"
     confidence: float = Field(
         # ..., # '...' means that this field is a mandatory field and that without a value given, it will throw an error.
-        0.0, # means that 0.0 is given as a default value instead of '...'.
+        0.67, # means that 0.0 is given as a default value instead of '...'.
         ge=0.0,
         le=1.0,
         description="Confidence score between 0.0 and 1.0"
@@ -129,7 +129,8 @@ class PlanReviewerState(BaseModel):
 
 
 class ExecutionTask(BaseModel):
-    task_name:str = ""
+    id: str = ""
+    description:str = ""
     status: Literal[
         "pending",
         "running",
@@ -137,6 +138,8 @@ class ExecutionTask(BaseModel):
         "failed"
     ] = "pending"
     depends:list[str] = []
+    tool_hint: list[ToolHint]
+    expected_output: str = ""
     result: Any = None
     error: str | None = None
     retry_count:int = 0
@@ -154,3 +157,4 @@ class AgentState(BaseModel):
     plan_feasibility_checker: PlanFeasibilityCheckerState = Field(default_factory=PlanFeasibilityCheckerState)
     plan_safty_critic:PlanSaftyCriticState = Field(default_factory=PlanSaftyCriticState)
     executor: ExecutorState = Field(default_factory=ExecutorState)
+    final_output:str=""

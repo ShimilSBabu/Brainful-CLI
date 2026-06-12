@@ -19,7 +19,7 @@ MODELS=[
 API_KEYS=[
     os.environ["MISTRAL_API_KEY"],
     os.environ["MISTRAL_AUTONOMOUS_API_KEY"],
-    os.environ["MISTRAL_API_KEY_PM"],
+    # os.environ["MISTRAL_API_KEY_PM"],
     os.environ["MISTRAL_API_KEY_EJ"]
 ]
 
@@ -75,9 +75,9 @@ class MessagesState(BaseModel):
 
 
 llm = ChatMistralAI(
-            model="mistral-medium-latest",
+            model="mistral-small-latest",
             temperature=0.1,
-            api_key=os.environ["MISTRAL_API_KEY_EJ"],
+            api_key=os.environ["MISTRAL_AUTONOMOUS_API_KEY"],
             max_tokens=32000
         )
 
@@ -90,7 +90,14 @@ def should_continue(state: MessagesState):
 def get_react_agent(system_message:str, human_message:str, tools:object):
     llm_with_tools = llm.bind_tools(tools)
     def call_llm(state: MessagesState):
-        response = llm_with_tools.invoke(state.messages)
+        response = "Unable to reach the ReAct LLM."
+        for trial_count in range(3):
+            try:
+                response = llm_with_tools.invoke(state.messages)
+                return {"messages": [response]}
+            except Exception as e:
+                print(f"\nTrial {trial_count+1}/3:Retrying the ReAct agent due to the below mentioned error.\n{str(e)}\n")
+                sleep(10)
         return {"messages": [response]}
 
     tool_node = ToolNode(tools, handle_tool_errors=True)

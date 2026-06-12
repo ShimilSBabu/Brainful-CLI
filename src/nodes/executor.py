@@ -1,16 +1,14 @@
 from importlib import import_module
-# from langchain.agents import create_agent
 from dotenv import load_dotenv
-# from langgraph.prebuilt import create_react_agent, AgentExecutor
 import json
 
 from ..state import AgentState
 from ..model import get_react_agent
 from ..helper_functions import fetch_structuredtools
 
-# load_dotenv()
 
 def executor(state:AgentState):
+    print("Inside Executor..")
     current_task = False
     current_task_num = False
     all_tasks = state.executor.tasks
@@ -31,6 +29,7 @@ def executor(state:AgentState):
         module = import_module(f"..tools.{tool_name}", package=__package__)
         result = module.run(**tool_parameters)
     except Exception as e:
+        print(f"Direct tool execution interrupted due to the error below:\n{str(e)}\nSwitching to the ReAct Agent approach.")
         system_prompt="""You are a ReAct agent inside the executor node of a plan-execute agentic system.
         You will be given exactly one substep of a large plan. Execute the step given by the planner. 
         Tool hint will be provided by the planner. 
@@ -38,7 +37,6 @@ def executor(state:AgentState):
         """
         human_prompt = str(current_task)
         load_dotenv()
-        # import os
         # print(f"current_task:\n{current_task}")
 
         tools = fetch_structuredtools()
@@ -57,8 +55,20 @@ def executor(state:AgentState):
         all_tasks[current_task_num].status = "failed"
     all_tasks[current_task_num].retry_count += 1
 
-    return{
-        "executor":{
-            "tasks":all_tasks
-        }
-    }
+    if tool_name == "return_final_output_tool":
+        # return{
+        #     "executor":{
+        #         "tasks":all_tasks
+        #     },
+        #     "final_output":result_content
+        # }
+        state.final_output = result_content
+
+    # print(f"all_tasks\n{all_tasks}\n")
+    # return{
+    #     "executor":{
+    #         "tasks":all_tasks
+    #     }
+    # }
+    state.executor.tasks = all_tasks
+    return state

@@ -7,7 +7,6 @@ import json
 
 def planner(state:AgentState):
     print("Inside Planner..")
-    # user_query = state['input']['user_query']
     os_dict = {
         'nt':"windows"
     }

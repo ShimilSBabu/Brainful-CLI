@@ -3,6 +3,7 @@ import subprocess
 def run(command:str, arguments:str|None = None, cwd:str|None = None)->dict:
     """This tool can perform shell command execution if command, arguments(if any) and cwd(if applicable) are given."""
     status=True
+    error=""
     try:
         if arguments:
             full_command = [command] + [arguments]
@@ -15,17 +16,22 @@ def run(command:str, arguments:str|None = None, cwd:str|None = None)->dict:
                     cwd=cwd,
                     shell=False
         )
-    except Exception as e:
-        status=False
-    return {
-        "status":status,
-        "content":result.stdout,
-        "error":str(e),
-        "metadata":{
+        content=result.stdout
+        metadata={
             "std_status":result.returncode==0,
             "std_err":result.stderr,
             "code":result.returncode
             }
+    except Exception as e:
+        status=False
+        content=""
+        metadata={}
+        error=str(e)
+    return {
+        "status":status,
+        "content":content,
+        "error":error,
+        "metadata":metadata
         }
     # return{
     #     "status":result.returncode==0,
