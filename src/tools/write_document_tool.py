@@ -1,3 +1,6 @@
+from langsmith import traceable
+
+@traceable(run_type="tool")
 def run(file_path:str, contents:str) -> dict:
     """This tool can write a new file when the file path and the contents are given."""
 

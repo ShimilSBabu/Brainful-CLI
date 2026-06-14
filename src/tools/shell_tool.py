@@ -1,5 +1,7 @@
 import subprocess
+from langsmith import traceable
 
+@traceable(run_type="tool")
 def run(command:str, arguments:str|None = None, cwd:str|None = None)->dict:
     """This tool can perform shell command execution if command, arguments(if any) and cwd(if applicable) are given."""
     status=True

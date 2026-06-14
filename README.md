@@ -286,3 +286,27 @@ for file in os.listdir(path=file_path):
 Create a conditional edge which ends the workflow if the plan is completed. Otherwise, the executor must be called again until all the tasks are completed.
 
 Move the conditional edges to a single seperate file inside src. 
+
+
+## Day 10
+Add observability via LangSmith.
+
+1. Create an account in LangSmith (https://smith.langchain.com/).
+2. Create an 'Application' in LangSmith
+3. Copy the api-key from there.
+4. Inside the .env file, add these environmental variables.
+
+    * LANGSMITH_TRACING=true
+    * LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+    * LANGSMITH_API_KEY=\<the api-key copied earlier>
+    * LANGSMITH_PROJECT=\<name of the application>
+
+
+For tracing the custom tools or functions,
+```python
+    from langsmith import traceable
+
+    @traceable
+    def my_function():
+        ...
+```

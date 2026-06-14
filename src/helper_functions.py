@@ -1,6 +1,8 @@
 import os, json
 from langchain_core.tools import StructuredTool
 from importlib import import_module
+from langsmith import traceable
+
 
 def read_tool_registry():
     """This function provides necessary information regarding all the available tools."""
@@ -8,7 +10,7 @@ def read_tool_registry():
         tool_info = f.read()
     return tool_info
 
-
+@traceable
 def fetch_task_result(task_id:str, tasks):
     """This function fetches the result of a previous task if the id of the previous task is mentioned."""
     for task in tasks:
@@ -24,7 +26,7 @@ def tool_registry_generator(tool_directory_path):
 def get_tools_info():
     """This function creates a list of dicctionary containing anecessary information regarding all the available tools."""
 
-
+@traceable
 def fetch_structuredtools():
     tools = []
     print(os.getcwd())

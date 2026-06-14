@@ -1,3 +1,6 @@
+from langsmith import traceable
+
+@traceable(run_type="tool")
 def run(file_path:str)->dict:
     """This tool can read and return the contents of a file when the file path is given."""
     status=True
