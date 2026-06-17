@@ -455,3 +455,43 @@ It will be unserializable if;
 
      plan_review: list[PlanReviewerConfidences] = Field(default_factory=list) => Correct
 
+
+## Day 12
+Add Human In The Loop (HITL)
+
+```python
+from langgraph.types import interrupt
+answer = interrupt( # The variable name can be given as anything.
+    {
+        "approval": "Approve this action?" # This need not be a dict. This can be anything which is serializable.
+    }
+)
+```
+This could be used for adding the HITL.
+
+The graph execution will stop at this interrupt.
+
+For resuming, call the graph with Command(resume="value for the variable 'answer' mentioned in the interrupt"). The given value will be stored in the variable 'answer' mentioned in the interrupt.
+
+```python
+from langgraph.types import Command
+graph.invoke(
+    Command(resume="question approvedd.."),
+    config=config
+)
+```
+Note: The node in which the interrupt is set up will run again from start when the agent resumes.
+
+```python
+some_funcction_1()
+print("Print_1")
+answer = interrupt(...)
+some_funcction_2()
+print("Print_2")
+```
+
+In this case, some_funcction_1() and Print_1 will happen twice;
+1. Before interrupt
+2. After resume happens via Command()
+
+But, some_funcction_2() and Print_2 will happen only once; after resume happens via Command(). They won't happen before the interrupt as the graph is interrupted before their lines.

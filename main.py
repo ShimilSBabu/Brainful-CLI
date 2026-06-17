@@ -65,17 +65,17 @@ def main(thread_id=""):
     with SqliteSaver.from_conn_string("checkpoints.db") as checkpointer:
         graph = graph_builder.compile(checkpointer=checkpointer)
     # state_input_user_query = {"user_query":"Give me all the files ending with '.py' in the 'nodes' folder of the 'src' folder of this directory."}
-        for event in graph.stream(
-                state,
-                config=config
-            ):
-                print("-"*40)
-                print(f"event\n{event}")
-                print("-"*40)
-        # state = graph.invoke(
-        #     state,
-        #     config=config
-        #     )
+        # for event in graph.stream(
+        #         state,
+        #         config=config
+        #     ):
+        #         print("-"*40)
+        #         print(f"event\n{event}")
+        #         print("-"*40)
+        state = graph.invoke(
+            state,
+            config=config
+            )
         # from langgraph.types import Command
         # graph.invoke(
         #     Command(resume="question approvedd.."),

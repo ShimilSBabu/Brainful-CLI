@@ -126,6 +126,7 @@ class PlanReviewerState(BaseModel):
     plan_review: list[PlanReviewerConfidences] = Field(default_factory=list)
     human_approval_required:bool = False
     approval: bool=False
+    review_count:int=0
 
 
 class ExecutionTask(BaseModel):
