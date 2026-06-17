@@ -70,7 +70,7 @@ class PlanFeasibilityCheckerState(BaseModel):
         description="Confidence score between 0.0 and 1.0"
     )
     dimension_scores: FeasibilityCheckerDimensionScores = Field(default_factory=FeasibilityCheckerDimensionScores)
-    blocking_issues: list[BlockingIssues] = [Field(default_factory=BlockingIssues)]
+    blocking_issues: list[BlockingIssues] = Field(default_factory=list)
     replanning_prompt:str=""
     summary:str=""
 
@@ -108,8 +108,8 @@ class PlanSaftyCriticState(BaseModel):
         description="Confidence score between 0.0 and 1.0"
     )
     dimension_scores: SaftyCriticDimensionScores = Field(default_factory=SaftyCriticDimensionScores)
-    findings: list[Findings] = [Field(default_factory=Findings)]
-    constraints_to_inject: list[ConstraintsToInject] = [Field(default_factory=ConstraintsToInject)]
+    findings: list[Findings] = Field(default_factory=list)
+    constraints_to_inject: list[ConstraintsToInject] = Field(default_factory=list)
     escalation_reason:str = ""
     veto_reason:str = ""
     replanning_prompt:str = ""
@@ -118,14 +118,14 @@ class PlanSaftyCriticState(BaseModel):
 
 class PlanReviewerConfidences(BaseModel):
     plan_feasibility_checker_confidence:float = 0.0
-    plan_feasibility_blocking_issues:list[BlockingIssues] = [Field(default_factory=BlockingIssues)]
+    plan_feasibility_blocking_issues:list[BlockingIssues] = Field(default_factory=list)
     plan_safty_critic_state_confidence:float = 0.0
-    plan_safty_findings:list[Findings] = [Field(default_factory=Findings)]
+    plan_safty_findings:list[Findings] = Field(default_factory=list)
 
 class PlanReviewerState(BaseModel):
-    plan_review: list[PlanReviewerConfidences] = [Field(default_factory=PlanReviewerConfidences)]
-    human_approval_required:bool = 0
-    approval: bool=0
+    plan_review: list[PlanReviewerConfidences] = Field(default_factory=list)
+    human_approval_required:bool = False
+    approval: bool=False
 
 
 class ExecutionTask(BaseModel):
@@ -146,7 +146,7 @@ class ExecutionTask(BaseModel):
     feedback:str = ""
 
 class ExecutorState(BaseModel):
-    tasks: list[ExecutionTask] = [Field(default_factory=ExecutionTask)]
+    tasks: list[ExecutionTask] = Field(default_factory=list)
     current_task:ExecutionTask | None = None
 
 
@@ -158,3 +158,4 @@ class AgentState(BaseModel):
     plan_safty_critic:PlanSaftyCriticState = Field(default_factory=PlanSaftyCriticState)
     executor: ExecutorState = Field(default_factory=ExecutorState)
     final_output:str=""
+    # approval:str = ""

@@ -9,10 +9,20 @@ from src.nodes.plan_reviewer import plan_reviewer
 from src.nodes.replanner import replanner
 from src.nodes.executor import executor
 from src.conditional_edges import plan_revise_check, plan_execution_status
+from langgraph.checkpoint.sqlite import SqliteSaver
 
-def main():
+
+def main(thread_id=""):
     print("Hello from day-1-strip-to-core!")
 
+    # memory = SqliteSaver.from_conn_string(
+    #     "checkpoints.db"
+    # )
+    config = {
+    "configurable": {
+        "thread_id": thread_id if thread_id else "user_123"
+    }
+}
     # user_query = input("Hi human, tell me your query: ")
 
     graph_builder = StateGraph(AgentState)
@@ -47,17 +57,32 @@ def main():
             "done":END
         }
     )
-
-    graph = graph_builder.compile()
-    # state_input_user_query = {"user_query":"Give me all the files ending with '.py' in the 'nodes' folder of the 'src' folder of this directory."}
     state_input_user_query = {"user_query":"Give me all the files starting with '.py' in the 'tools' folder of this directory."}
     state = AgentState(
         input=state_input_user_query
         )
     
-    state = graph.invoke(state)
-    if state["final_output"]:
-        print(state["final_output"])
+    with SqliteSaver.from_conn_string("checkpoints.db") as checkpointer:
+        graph = graph_builder.compile(checkpointer=checkpointer)
+    # state_input_user_query = {"user_query":"Give me all the files ending with '.py' in the 'nodes' folder of the 'src' folder of this directory."}
+        for event in graph.stream(
+                state,
+                config=config
+            ):
+                print("-"*40)
+                print(f"event\n{event}")
+                print("-"*40)
+        # state = graph.invoke(
+        #     state,
+        #     config=config
+        #     )
+        # from langgraph.types import Command
+        # graph.invoke(
+        #     Command(resume="question approvedd.."),
+        #     config=config
+        # )
+    if state.final_output:
+        print(state.final_output)
     print("="*50)
 if __name__ == "__main__":
     main()

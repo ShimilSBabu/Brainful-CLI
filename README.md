@@ -310,3 +310,148 @@ For tracing the custom tools or functions,
     def my_function():
         ...
 ```
+
+When building agents:
+    1. Build graph
+            ↓
+    2. Enable tracing
+            ↓
+    3. Run graph
+            ↓
+    4. Inspect trace
+            ↓
+    5. Fix issues
+            ↓
+    6. Create dataset
+            ↓
+    7. Run evaluation
+            ↓
+    8. Deploy
+            ↓
+    9. Monitor production
+
+
+## Day 11
+Impliment resumability.
+
+### Usefull links
+    Resumability: https://chatgpt.com/s/t_6a311eda65508191b8330fb97c727253
+    Resumability with PostgreSQL: 
+
+1. Install and setup PostgreSQL.
+2. Create helper functions for table creation, adding data to the table (storing data), table modification (updating data), table fetching (reading data), deleting specific data (data deletion), deleting the table.
+3. Save checkpoints to PostgreSQL.
+4. Load the checkpoint when required.
+
+or 
+
+Use sqlite for checkpointing
+
+* uv add langgraph-checkpoint-sqlite
+
+```python
+from langgraph.checkpoint.sqlite import SqliteSaver
+memory = SqliteSaver.from_conn_string(
+    "checkpoints.db"
+)
+graph = graph_builder.compile(
+    checkpointer=memory
+)
+
+config = {
+    "configurable": {
+        "thread_id": "user_123"
+    }
+}
+graph.invoke(
+    {"message": "hello"},
+    config=config
+)
+```
+
+__Resumability means the ability of an agent workflow to continue execution from a previously saved state instead of restarting from the beginning.__
+
+Imagine:
+
+    Step 1 → Step 2 → Step 3 → Step 4 → Step 5
+
+Suppose Step 4 crashes.
+
+Without resumability:
+
+    Restart:
+    Step 1 → Step 2 → Step 3 → Step 4 → Step 5
+
+With resumability:
+
+    Resume:
+    Step 4 → Step 5
+
+Many people think:
+
+```python
+state = load_from_db()
+```
+
+is resumability. It isn't. That's only persistence.
+
+Resumability requires:
+```python
+State
++
+Execution Position
++
+Pending Interrupts
++
+Checkpoint History
+```
+LangGraph's Postgres checkpointer stores all of that.
+
+### In more details, the system needs:
+
+#### 1. Workflow State
+
+Example:
+
+    {
+        "query": "Find competitors",
+        "competitors": [...],
+        "report": "...",
+        "approved": False
+    }
+
+This is usually called:
+
+state
+checkpoint
+snapshot
+#### 2. Current Position
+
+Need to know:
+
+    Currently at node:
+    generate_report
+
+or
+
+    Currently at step 17
+#### 3. Intermediate Results
+
+Don't recompute:
+
+    Web search results
+    Embeddings
+    Tool outputs
+    Database queries
+
+Store them.
+
+### Important
+The state __MUST be serializable__ for storing as checkpoint.
+It will be unserializable if; 
+- BaseModel AgentState is having objects of custom classes in it. Eg:- AgentState having PlannerState in it.
+- Any node returns entire AgentState if above point is true.
+- plan_review: list[PlanReviewerConfidences] = [Field(default_factory=PlanReviewerConfidences)] => Wrong
+
+     plan_review: list[PlanReviewerConfidences] = Field(default_factory=list) => Correct
+

@@ -92,4 +92,4 @@ def planner(state:AgentState):
     else:
         print(f"Response Status: {response["status"]}")
     
-    return state
+    return state.model_dump()
