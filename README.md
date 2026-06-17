@@ -495,3 +495,19 @@ In this case, some_funcction_1() and Print_1 will happen twice;
 2. After resume happens via Command()
 
 But, some_funcction_2() and Print_2 will happen only once; after resume happens via Command(). They won't happen before the interrupt as the graph is interrupted before their lines.
+
+
+## Day 13
+Deployment using FastAPI
+
+1. Import FastAPI
+2. Create an instance (usually named as 'app' or 'main', eventhough any name could be assigned).
+3. Add wrapper @app.get("endpoint") # get/post/webhook
+```python
+from fastapi import FastAPI
+app = FastAPI()
+
+@app.get("endpoint")
+def func_name():
+
+```

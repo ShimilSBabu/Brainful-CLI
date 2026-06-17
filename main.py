@@ -1,5 +1,6 @@
 from langgraph.graph import StateGraph, START, END
-from langgraph.types import Send
+from fastapi import FastAPI
+from langgraph.types import Command
 
 from src.state import AgentState
 from src.nodes.planner import planner
@@ -11,19 +12,17 @@ from src.nodes.executor import executor
 from src.conditional_edges import plan_revise_check, plan_execution_status
 from langgraph.checkpoint.sqlite import SqliteSaver
 
+app = FastAPI()
 
-def main(thread_id=""):
+@app.get("/run_cli_agent")
+def main(state_input_user_query:str="", thread_id:str="", resume_command:str=""):
     print("Hello from day-1-strip-to-core!")
 
-    # memory = SqliteSaver.from_conn_string(
-    #     "checkpoints.db"
-    # )
     config = {
     "configurable": {
-        "thread_id": thread_id if thread_id else "user_123"
+        "thread_id": thread_id if thread_id else "test_user_123"
     }
 }
-    # user_query = input("Hi human, tell me your query: ")
 
     graph_builder = StateGraph(AgentState)
     graph_builder.add_node("planner_node", planner)
@@ -72,17 +71,31 @@ def main(thread_id=""):
         #         print("-"*40)
         #         print(f"event\n{event}")
         #         print("-"*40)
-        state = graph.invoke(
-            state,
-            config=config
+        if resume_command:
+            graph.invoke(
+                Command(resume=resume_command),
+                config=config
             )
-        # from langgraph.types import Command
-        # graph.invoke(
-        #     Command(resume="question approvedd.."),
-        #     config=config
-        # )
-    if state.final_output:
-        print(state.final_output)
+        else:
+            state = graph.invoke(
+                state,
+                config=config
+                )
     print("="*50)
+    print(f"state.final_output: {state.final_output}")
+    print("="*50)
+    if state.final_output:
+        return {"status": 200, "message":state.final_output}
+    else:
+        return {"status": 400, "message":"No output found.."}
+
+
 if __name__ == "__main__":
-    main()
+    import uvicorn
+    uvicorn.run(
+        app, 
+        # host="0.0.0.0",
+        host="127.0.0.1",
+        port=8080,
+        use_colors=True
+        )
