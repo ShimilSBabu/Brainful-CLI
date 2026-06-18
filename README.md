@@ -335,8 +335,9 @@ When building agents:
 Impliment resumability.
 
 ### Usefull links
-    Resumability: https://chatgpt.com/s/t_6a311eda65508191b8330fb97c727253
-    Resumability with PostgreSQL: 
+Resumability: https://chatgpt.com/s/t_6a311eda65508191b8330fb97c727253
+
+Resumability with PostgreSQL: 
 
 1. Install and setup PostgreSQL.
 2. Create helper functions for table creation, adding data to the table (storing data), table modification (updating data), table fetching (reading data), deleting specific data (data deletion), deleting the table.
@@ -511,3 +512,17 @@ app = FastAPI()
 def func_name():
 
 ```
+
+
+## Day 14
+Adding a simple UI with Streamlit
+
+### Usefull links
+Streamlit Basics: https://chatgpt.com/share/6a33582e-caf4-83ee-838c-67a5e9a6190e
+
+Streamlit-FastAPI integration: https://chatgpt.com/share/6a3358fc-90b4-83ee-a74b-1780cac86849
+
+Basically, this is not an integration. Streamlit is just using the endpoint of the FastAPI program inside it.
+1. Run the FastAPI program.
+2. Call the FastAPI endpoint inside Streamlit program.
+3. Run the Streamlit program.

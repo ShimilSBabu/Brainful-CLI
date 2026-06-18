@@ -4,7 +4,7 @@ import json
 
 from ..state import AgentState
 from ..model import get_react_agent
-from ..helper_functions import fetch_structuredtools
+from ..helper_functions import fetch_structuredtools, fetch_task_result
 
 
 def executor(state:AgentState):
@@ -12,6 +12,7 @@ def executor(state:AgentState):
     current_task = False
     current_task_num = False
     all_tasks = state.executor.tasks
+    print(f"all_tasks: {all_tasks}")
     for task_num, task in enumerate(all_tasks):
         if task.status == "pending":
             current_task = task
@@ -23,9 +24,17 @@ def executor(state:AgentState):
     
     tool_name = task.tool_hint[0].name
     tool_parameters = task.tool_hint[0].parameters
-
+    dependencies_dict = {}
+    for dependency in task.depends_on:
+        dependency_result = fetch_task_result(dependency, all_tasks)
+        dependencies_dict.update({dependency:dependency_result})
+        if "content" in tool_parameters:
+            # if dependency in tool_parameters["content"]:
+            #     tool_parameters["content"].replace(dependency, dependency_result)
+            if f"[output of {dependency}]" in tool_parameters["content"]:
+                tool_parameters["content"] = tool_parameters["content"].replace(f"[output of {dependency}]", dependency_result)
+    print(f"tool_parameters: {tool_parameters}")
     try:
-        # module = import_module(f"..src.tools.{tool_name}", package=__package__)
         module = import_module(f"..tools.{tool_name}", package=__package__)
         result = module.run(**tool_parameters)
     except Exception as e:

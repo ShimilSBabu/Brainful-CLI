@@ -12,7 +12,7 @@ from pydantic import Field, BaseModel
 #     error: str | None = None
 
 class ToolHint(BaseModel):
-    name:Literal["shell_tool", "read_document_tool", "write_document_tool", "modify_document_tool"] | None = None
+    name:Literal["shell_tool", "read_document_tool", "write_document_tool", "modify_document_tool", "return_final_output_tool"] | None = None
     parameters:dict|None = None
 
 class Task(BaseModel):
@@ -138,7 +138,7 @@ class ExecutionTask(BaseModel):
         "done",
         "failed"
     ] = "pending"
-    depends:list[str] = []
+    depends_on:list[str] = []
     tool_hint: list[ToolHint]
     expected_output: str = ""
     result: Any = None

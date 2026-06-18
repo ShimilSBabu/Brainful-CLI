@@ -56,9 +56,16 @@ def planner(state:AgentState):
     6. Available tools: {tool_hints}.
     7. Do not plan steps that require information you do not have — include a discovery task first, or ask for clarification.
     8. Never combine planning with execution. Return the plan only.
+    9. For tasks with return_final_output_tool tool, the task must have 'depends_on' to other tasks in its tool_hint.
 
     EXTRA INFORMATION
     The current system is having the operating system: {os_name}
+
+    ## Important
+    - return_final_output_tool tool is the only tool which can display the final output to the user.
+    - Always call return_final_output_tool tool for giving the final output to the user.
+    - Specify the task name in the 'depends_on' for fetching the results of previous tasks.
+    - To include output of another task (eg:- t5) in the 'content' of task containing tool return_final_output_tool, incude exactly [output of {{task_id}}] (eg:- [output of t5]).
     """
 
     messages = [

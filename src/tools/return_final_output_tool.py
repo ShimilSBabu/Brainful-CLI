@@ -4,6 +4,8 @@ from langsmith import traceable
 def run(content:str="")->dict:
     """This tool returns the final output to the user. This tool must be madatorily called if the user needs to get the output for their query."""
     status=True
+    print(f"final op display content: {content}")
+
     if content:
         final_output=content
     else:

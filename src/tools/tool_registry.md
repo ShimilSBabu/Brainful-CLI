@@ -51,9 +51,9 @@
 ## modify_document_tool
     {
         "name": "modify_document_tool",
-        "description":"This tool can append new content to the already present contents of a file when the file path and the additional contents are given.",
-        "all_parameters":{"file_path":str, "additional_contents":str},
-        "minimum_required_parameters":{"file_path":str, "additional_contents":str},
+        "description":"This tool can append new content to the already present contents of a file when the file path and the contents are given.",
+        "all_parameters":{"file_path":str, "contents":str},
+        "minimum_required_parameters":{"file_path":str, "contents":str},
         "output_structure":{
             "status":status,
             "content":"",

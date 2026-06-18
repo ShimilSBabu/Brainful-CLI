@@ -56,9 +56,9 @@ def main(state_input_user_query:str="", thread_id:str="", resume_command:str="")
             "done":END
         }
     )
-    state_input_user_query = {"user_query":"Give me all the files starting with '.py' in the 'tools' folder of this directory."}
+    # state_input_user_query = {"user_query":"Give me all the files starting with '.py' in the 'tools' folder of this directory."}
     state = AgentState(
-        input=state_input_user_query
+        input={"user_query":state_input_user_query}
         )
     
     with SqliteSaver.from_conn_string("checkpoints.db") as checkpointer:
@@ -82,10 +82,11 @@ def main(state_input_user_query:str="", thread_id:str="", resume_command:str="")
                 config=config
                 )
     print("="*50)
-    print(f"state.final_output: {state.final_output}")
+    print(f"state.final_output: {state["final_output"]}")
     print("="*50)
-    if state.final_output:
-        return {"status": 200, "message":state.final_output}
+    if state["final_output"]:
+        # return {"status": 200, "message":state["final_output"]}
+        return state["final_output"]
     else:
         return {"status": 400, "message":"No output found.."}
 
@@ -93,9 +94,10 @@ def main(state_input_user_query:str="", thread_id:str="", resume_command:str="")
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        app, 
+        "main:app", 
         # host="0.0.0.0",
         host="127.0.0.1",
         port=8080,
-        use_colors=True
+        use_colors=True,
+        reload=True
         )

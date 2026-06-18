@@ -24,7 +24,7 @@ def tool_registry_generator(tool_directory_path):
 
 
 def get_tools_info():
-    """This function creates a list of dicctionary containing anecessary information regarding all the available tools."""
+    """This function creates a list of dicctionary containing a necessary information regarding all the available tools."""
 
 @traceable
 def fetch_structuredtools():
