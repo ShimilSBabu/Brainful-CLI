@@ -1,5 +1,7 @@
-from .state import AgentState
 from langsmith import traceable
+from langgraph.graph import END
+
+from .state import AgentState
 
 @traceable
 def plan_revise_check(state:AgentState):
@@ -16,3 +18,13 @@ def plan_execution_status(state:AgentState):
         if task.status == "pending":
             return "pending"
     return "done"
+
+@traceable
+def trivial_query_check(state:AgentState):
+    if state.final_output:
+        return END
+    else:
+        return [
+                "plan_feasibility_checker_node",
+                "plan_safty_critic_node"
+            ]

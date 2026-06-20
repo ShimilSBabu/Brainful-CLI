@@ -9,7 +9,7 @@ from src.nodes.plan_safty_critic import plan_safty_critic
 from src.nodes.plan_reviewer import plan_reviewer
 from src.nodes.replanner import replanner
 from src.nodes.executor import executor
-from src.conditional_edges import plan_revise_check, plan_execution_status
+from src.conditional_edges import plan_revise_check, plan_execution_status, trivial_query_check
 from langgraph.checkpoint.sqlite import SqliteSaver
 
 app = FastAPI()
@@ -33,12 +33,17 @@ def main(state_input_user_query:str="", thread_id:str="", resume_command:str="")
     graph_builder.add_node("replanner_node", replanner)
 
     graph_builder.add_edge(START, "planner_node")
-    graph_builder.add_edge("planner_node", "plan_feasibility_checker_node")
-    graph_builder.add_edge("planner_node", "plan_safty_critic_node")
+    # graph_builder.add_edge("planner_node", "plan_feasibility_checker_node")
+    # graph_builder.add_edge("planner_node", "plan_safty_critic_node")
     graph_builder.add_edge("plan_feasibility_checker_node", "plan_reviewer_node")
     graph_builder.add_edge("plan_safty_critic_node", "plan_reviewer_node")
     graph_builder.add_edge("replanner_node", "plan_feasibility_checker_node")
     graph_builder.add_edge("replanner_node", "plan_safty_critic_node")
+
+    graph_builder.add_conditional_edges(
+        source="planner_node",
+        path=trivial_query_check
+    )
 
     graph_builder.add_conditional_edges(
         source="plan_reviewer_node",

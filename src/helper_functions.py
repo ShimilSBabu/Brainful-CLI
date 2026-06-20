@@ -15,7 +15,7 @@ def fetch_task_result(task_id:str, tasks):
     """This function fetches the result of a previous task if the id of the previous task is mentioned."""
     for task in tasks:
         if task.id == task_id:
-            return task.result
+            return task.result if task.result else task.error
     return False
 
 

@@ -526,3 +526,25 @@ Basically, this is not an integration. Streamlit is just using the endpoint of t
 1. Run the FastAPI program.
 2. Call the FastAPI endpoint inside Streamlit program.
 3. Run the Streamlit program.
+
+
+## Day 15
+Adding 'fast track' to bypass plan-execute for trivial tasks.
+
+The usage of plan-execute is token-wise expensive and overly time consuming.
+For trivial tasks like answering a simple question which does not require any tool execution, LLMs could directly give the reply instead of going through plan-execute.
+For these exact reasons, a 'fast-track' path which bypasses the plan-execute is created where planner directly gives the reply for the users' query without making an exclusive plan for it.
+
+This could be implemented by simple prompting itself without the need of a specialized task catogorizer agent.
+
+Eg:- 
+
+    You have 2 modes;
+    1. Non-trivial task mode: The user's query requires to do/perform in this computer or is something related to this computer.
+    2. Trivial task mode: The user is asking for some general knowledge.
+
+    If the user's query if a trivial task:
+        Directly reply to the user in the format {{"final_output":{{your reply in markdown format}}}}. Do not add anything extra. No greetings are required.
+
+    Else:
+        You are a planning agent in a plan-execute system ...

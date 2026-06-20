@@ -15,6 +15,14 @@ def planner(state:AgentState):
     os_name = os_dict[os.name]
 
     planner_system_prompt = f"""
+You have 2 modes;
+1. Non-trivial task mode: The user's query requires to do/perform in this computer or is something related to this computer.
+2. Trivial task mode: The user is asking for some general knowledge.
+
+If the user's query if a trivial task:
+    Directly reply to the user in the format {{"final_output":{{your reply in markdown format}}}}. Do not add anything extra. No greetings are required.
+
+Else:
     You are a planning agent in a plan-execute system for a smart CLI assistant. Your only job is to decompose a goal into an ordered list of discrete, executable tasks.
     
     ## Output format
@@ -88,7 +96,14 @@ def planner(state:AgentState):
         json_end = response_content.rfind("}") + 1
         response_content_trimmed = response_content[json_start:json_end]
         # print(f"response_content({type(response_content_trimmed)})\n{response_content_trimmed}")
-        plan = json.loads(response_content_trimmed)["plan"]
+        response_loaded = json.loads(response_content_trimmed)
+        if "final_output" in response_loaded:
+            print("This is a trivial task. Choosing Fast track")
+            return response_loaded
+        print("This is a non-trivial task. Choosing Plan-Elaborate")
+        
+        plan = response_loaded["plan"]
+        
         tasks_list= plan["tasks"]
         return {
             "planner":plan,

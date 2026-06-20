@@ -25,6 +25,7 @@ if user_query:
             fastapi_endpoint,
             stream=False
         )
-        print(f"response({type(message.text)}): {message.text}")
+        print(f"response({type(message.text)}): {message.json()}")
         st.markdown("### Output")
-        st.success(f"The result is\n{message.text.replace("\n", "\n\n")}")
+        # st.success(message_modified)
+        st.markdown(f"{message.json()}")
