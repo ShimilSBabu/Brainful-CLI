@@ -4,6 +4,101 @@
 3. Create the folder structure for the decided architecture.
 4. Create and store the necessary environmental variables in the .env file.
 
+### Starting a new Project
+1. Install git in the system if not installed yet.
+2. Install UV in the system if not installed yet.
+3. Create a repo using UV. 
+
+        uv init repo_name
+
+4. Connect it with the remote GitHub.
+    
+        git remote add origin remote_repo_http_link
+
+5. Do the 1st add and commit.
+
+    - git add .
+    - git commit -m "some meaningful message"
+    
+    _[
+        From 2nd commit onwards, add and commit could be combined as a single command. Remember : Whenever a new file is created, git add . must be used as such. Commit -a will only consider files which were already present before.
+            
+            git add -a -m "some meaningful message"
+    ]_
+
+6. Instead of mentioning the branch name every time, 
+    - Option 1) Use default current.
+
+            git config --global push
+
+    This tells Git:
+        
+    "Push the current branch to a branch with the same name on remote"
+
+    - Option 2) Set upstream
+        
+            git push -u origin repo_name
+
+    _[
+        To remove upstream tracking,
+            git branch --unset-upstream
+    ]_
+7. Git push if not pushed. It using option 2, No need to mention repo name as the previous command will handle that.
+    
+        git push
+
+8. Create and Use Virtual Environment
+    1.  Create venv
+            
+            uv venv
+
+    2.  Activate
+        - Windows
+            
+                .venv\Scripts\activate
+
+        - Linux/macOS
+                
+                source .venv/bin/activate
+9. Install libraries
+    
+        uv add library_name
+
+_[
+    To uninstall libraries,
+        uv remove library_name
+]_
+
+10. Set up environment.
+    1. Create .env file and store all environment variables and keys in it.
+    2. Load the .env
+        ```python
+        from dotenv import load_dotenv
+        load_dotenv()
+        ```
+    3. Verify via printing and checking (Just the 1st time only)
+        ```python
+        print(os.environ)
+        ```
+11. Run Python Using UV
+    1. Normal python script
+
+            uv run file_name.py
+    2. FastAPI
+       
+            uv run uvicorn file_name:app --reload
+
+    [
+        To Install From Existing Project
+
+                1. git clone  remote_repo_http_link
+                2. cd repo_name
+                3. uv sync
+    ]
+
+
+
+    
 
 ### Using .env Files in Python
 Environment variables are essential for separating sensitive configuration data (like API keys, database URLs, etc.) from your codebase. The .env file is a simple way to manage these values during development. This document explains how to use .env files in Python with the python-dotenv package.
