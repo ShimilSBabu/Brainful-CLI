@@ -548,3 +548,11 @@ Eg:-
 
     Else:
         You are a planning agent in a plan-execute system ...
+
+
+## Day 16
+Add Asynchronisity
+
+If the program is synchronous, when multiple users access the same application, the 1st user's query will be taken in and the other users will've to wait till the applicaation finishes executing the 1st user's query.
+
+To avoid this delema, the program could be made asynchronous. This way, multiple requests could be handled concurent-like.
