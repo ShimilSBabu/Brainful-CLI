@@ -9,27 +9,80 @@
 2. Install UV in the system if not installed yet.
 3. Create a repo using UV. 
 
-        uv init repo_name
+        uv init repo_name       # To create the repo and everything inside.
 
-4. Connect it with the remote GitHub.
+    Or
+        
+        uv init         # If the repo is already present
+
+4. Set up git
+
+    4.1. Install the GitHub CLI (gh) (If not installed)
+
+        sudo apt install gh     # Linux
+        winget install GitHub.cli       # Windows
+
+    Note: Close __all__ the VS Code windows and reopen them for getting the installed app.
+
+    4.2. Authenticate Git (if not authenticated. Necessary only the 1st time).
+
+        gh auth login 
+
+    4.3. Initialize Git (Only If the project is __NOT__ already a Git repository)
+
+        git init
+        
+    4.4. Add .gitignore template
+
+        curl -s https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore -o .gitignore      # Linux
+        
+        curl.exe -L https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore -o .gitignore      # Windows
+
+
+
+    4.5. Do the 1st add and commit.
+
+        - git add .
+        - git commit -m "some meaningful message"
+        
+        
+    From 2nd commit onwards, add and commit could be combined as a single command. 
+    
+    Remember : Whenever a new file is created, git add . must be used as such. Commit -a will only consider files which were already present before.
+                
+            git add -a -m "some meaningful message"
+        
+5. Create a GitHub repository 
+
+    5.1. Create a repo in GitHub via UI and connect the local with the remote GitHub.
     
         git remote add origin remote_repo_http_link
 
-5. Do the 1st add and commit.
+    5.2. Create remote repo from terminal (If not already created via UI)
 
-    - git add .
-    - git commit -m "some meaningful message"
+    _(Without GitHub CLI, Git cannot create GitHub repositories)._
+
+    For a private repository:
     
-    _[
-        From 2nd commit onwards, add and commit could be combined as a single command. Remember : Whenever a new file is created, git add . must be used as such. Commit -a will only consider files which were already present before.
-            
-            git add -a -m "some meaningful message"
-    ]_
+        gh repo create my_project --private --source=. --remote=origin --push
+
+    For a public repository:
+
+        gh repo create my_project --private --source=. --remote=origin --push
+
+
+    These commands automatically:
+
+    a. Creates the GitHub repository
+
+    b. Adds the remote
+
+    c. Pushes the code
 
 6. Instead of mentioning the branch name every time, 
     - Option 1) Use default current.
 
-            git config --global push
+            git config --global push.default current
 
     This tells Git:
         
