@@ -91,7 +91,9 @@
 6. Instead of mentioning the branch name every time, 
     - Option 1) Use default current.
 
+            git config --global init.defaultBranch main
             git config --global push.default current
+            git config --global push.autoSetupRemote true
 
     This tells Git:
         
