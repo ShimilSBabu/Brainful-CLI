@@ -79,6 +79,15 @@
 
     c. Pushes the code
 
+    5.3. The older git versions (before 2020) uses master insted of main. Both are same; just the name changed. If the local is having master, change it to main by;
+
+        git branch -m master main
+
+    For changing master -> main in the GitHub:
+
+    __Settings -> Repositories -> Repository default branch__
+    
+
 6. Instead of mentioning the branch name every time, 
     - Option 1) Use default current.
 
