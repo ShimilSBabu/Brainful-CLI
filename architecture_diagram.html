@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart CLI Agent - Architecture Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            border-radius: 4px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+            color: #333;
+        }
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Smart CLI Agent - Architecture Diagram</h1>
+        <p class="subtitle">Multi-stage agentic workflow with LangGraph orchestration</p>
+        
+        <div class="diagram-container">
+            <div class="mermaid">
+graph TD
+    A["🔵 User Input<br/>Query + User ID"] --> B["⚙️ FastAPI<br/>REST API"]
+    B --> C["🧠 LangGraph<br/>State Machine"]
+    
+    C --> D["📋 PLANNER<br/>Decompose Tasks"]
+    D --> E{🔹 Trivial?}
+    E -->|YES| Z["✅ FINAL OUTPUT"]
+    E -->|NO| F["✔️ FEASIBILITY CHECKER<br/>8-Dim Validation"]
+    
+    F --> G["🛡️ SAFETY CRITIC<br/>Risk Assessment"]
+    G --> H["👀 PLAN REVIEWER<br/>QA & Approval"]
+    H --> I{🔹 Revision Needed?}
+    I -->|YES| J["🔄 REPLANNER"]
+    J --> F
+    I -->|NO| K["⚡ EXECUTOR<br/>Run Plan"]
+    
+    K --> Z
+    
+    L["🔧 TOOL REGISTRY"] -.->|References| D
+    L -.->|References| K
+    
+    M["💾 State Objects<br/>Pydantic Models"] -.->|Tracks| C
+    N["📊 Streamlit UI"] -.->|Display| Z
+    O["🔌 SQLite<br/>Checkpoints"] -.->|Persist| C
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>📥 How to Use This Diagram</h3>
+            <ol>
+                <li><strong>View Online:</strong> The diagram is rendered above and updates in real-time</li>
+                <li><strong>Export as Image:</strong> Right-click the diagram and select "Save image as..." to download as PNG/SVG</li>
+                <li><strong>Edit the Diagram:</strong> Use <a href="https://mermaid.live/" target="_blank">Mermaid Live</a> - paste the code below</li>
+                <li><strong>Use in Documentation:</strong> Copy the code block below into your Markdown files</li>
+            </ol>
+            
+            <h3>📋 Mermaid Code (for copying):</h3>
+            <div class="code-block">
+graph TD
+    A["🔵 User Input<br/>Query + User ID"] --> B["⚙️ FastAPI<br/>REST API"]
+    B --> C["🧠 LangGraph<br/>State Machine"]
+    
+    C --> D["📋 PLANNER<br/>Decompose Tasks"]
+    D --> E{🔹 Trivial?}
+    E -->|YES| Z["✅ FINAL OUTPUT"]
+    E -->|NO| F["✔️ FEASIBILITY CHECKER<br/>8-Dim Validation"]
+    
+    F --> G["🛡️ SAFETY CRITIC<br/>Risk Assessment"]
+    G --> H["👀 PLAN REVIEWER<br/>QA & Approval"]
+    H --> I{🔹 Revision Needed?}
+    I -->|YES| J["🔄 REPLANNER"]
+    J --> F
+    I -->|NO| K["⚡ EXECUTOR<br/>Run Plan"]
+    
+    K --> Z
+    
+    L["🔧 TOOL REGISTRY"] -.->|References| D
+    L -.->|References| K
+    
+    M["💾 State Objects<br/>Pydantic Models"] -.->|Tracks| C
+    N["📊 Streamlit UI"] -.->|Display| Z
+    O["🔌 SQLite<br/>Checkpoints"] -.->|Persist| C
+            </div>
+
+            <h3>🔗 Quick Links</h3>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li><a href="https://mermaid.live/" target="_blank">Mermaid Live Editor</a> - Edit and customize the diagram</li>
+                <li><a href="https://mermaid.js.org/" target="_blank">Mermaid Documentation</a> - Learn more about Mermaid syntax</li>
+                <li><a href="https://draw.io/" target="_blank">Draw.io</a> - Convert to professional diagram formats</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

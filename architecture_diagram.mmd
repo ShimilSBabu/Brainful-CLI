@@ -1,0 +1,24 @@
+graph TD
+    A["🔵 User Input<br/>Query + User ID"] --> B["⚙️ FastAPI<br/>REST API"]
+    B --> C["🧠 LangGraph<br/>State Machine"]
+    
+    C --> D["📋 PLANNER<br/>Decompose Tasks"]
+    D --> E{🔹 Trivial?}
+    E -->|YES| Z["✅ FINAL OUTPUT"]
+    E -->|NO| F["✔️ FEASIBILITY CHECKER<br/>8-Dim Validation"]
+    
+    F --> G["🛡️ SAFETY CRITIC<br/>Risk Assessment"]
+    G --> H["👀 PLAN REVIEWER<br/>QA & Approval"]
+    H --> I{🔹 Revision Needed?}
+    I -->|YES| J["🔄 REPLANNER"]
+    J --> F
+    I -->|NO| K["⚡ EXECUTOR<br/>Run Plan"]
+    
+    K --> Z
+    
+    L["🔧 TOOL REGISTRY"] -.->|References| D
+    L -.->|References| K
+    
+    M["💾 State Objects<br/>Pydantic Models"] -.->|Tracks| C
+    N["📊 Streamlit UI"] -.->|Display| Z
+    O["🔌 SQLite<br/>Checkpoints"] -.->|Persist| C
