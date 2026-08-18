@@ -1,0 +1,825 @@
+## Day 1
+1. Install and setup Git and UV.
+2. Decide the base outline of the architecture of the application.
+3. Create the folder structure for the decided architecture.
+4. Create and store the necessary environmental variables in the .env file.
+
+### Starting a new Project
+1. Install git in the system if not installed yet.
+2. Install UV in the system if not installed yet.
+3. Create a repo using UV. 
+
+        uv init repo_name       # To create the repo and everything inside.
+
+    Or
+        
+        uv init         # If the repo is already present
+
+4. Set up git
+
+    4.1. Install the GitHub CLI (gh) (If not installed)
+
+        sudo apt install gh     # Linux
+        winget install GitHub.cli       # Windows
+
+    Note: Close __all__ the VS Code windows and reopen them for getting the installed app.
+
+    4.2. Authenticate Git (if not authenticated. Necessary only the 1st time).
+
+        gh auth login 
+
+    4.3. Initialize Git (Only If the project is __NOT__ already a Git repository)
+
+        git init
+        
+    4.4. Add .gitignore template
+
+        curl -s https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore -o .gitignore      # Linux
+        
+        curl.exe -L https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore -o .gitignore      # Windows
+
+
+
+    4.5. Do the 1st add and commit.
+
+        - git add .
+        - git commit -m "some meaningful message"
+        
+        
+    From 2nd commit onwards, add and commit could be combined as a single command. 
+    
+    Remember : Whenever a new file is created, git add . must be used as such. Commit -a will only consider files which were already present before.
+                
+            git add -a -m "some meaningful message"
+        
+5. Create a GitHub repository 
+
+    5.1. Create a repo in GitHub via UI and connect the local with the remote GitHub.
+    
+        git remote add origin remote_repo_http_link
+
+    5.2. Create remote repo from terminal (If not already created via UI)
+
+    _(Without GitHub CLI, Git cannot create GitHub repositories)._
+
+    For a private repository:
+    
+        gh repo create my_project --private --source=. --remote=origin --push
+
+    For a public repository:
+
+        gh repo create my_project --private --source=. --remote=origin --push
+
+
+    These commands automatically:
+
+    a. Creates the GitHub repository
+
+    b. Adds the remote
+
+    c. Pushes the code
+
+    5.3. The older git versions (before 2020) uses master insted of main. Both are same; just the name changed. If the local is having master, change it to main by;
+
+        git branch -m master main
+
+    For changing master -> main in the GitHub:
+
+    __Settings -> Repositories -> Repository default branch__
+    
+
+6. Instead of mentioning the branch name every time, 
+    - Option 1) Use default current.
+
+            git config --global init.defaultBranch main
+            git config --global push.default current
+            git config --global push.autoSetupRemote true
+
+    This tells Git:
+        
+    "Push the current branch to a branch with the same name on remote"
+
+    - Option 2) Set upstream
+        
+            git push -u origin repo_name
+
+    _[
+        To remove upstream tracking,
+            git branch --unset-upstream
+    ]_
+7. Git push if not pushed. It using option 2, No need to mention repo name as the previous command will handle that.
+    
+        git push
+
+8. Create and Use Virtual Environment
+    1.  Create venv
+            
+            uv venv
+
+    2.  Activate
+        - Windows
+            
+                .venv\Scripts\activate
+
+        - Linux/macOS
+                
+                source .venv/bin/activate
+9. Install libraries
+    
+        uv add library_name
+
+_[
+    To uninstall libraries,
+        uv remove library_name
+]_
+
+10. Set up environment.
+    1. Create .env file and store all environment variables and keys in it.
+    2. Load the .env
+        ```python
+        from dotenv import load_dotenv
+        load_dotenv()
+        ```
+    3. Verify via printing and checking (Just the 1st time only)
+        ```python
+        print(os.environ)
+        ```
+11. Run Python Using UV
+    1. Normal python script
+
+            uv run file_name.py
+    2. FastAPI
+       
+            uv run uvicorn file_name:app --reload
+
+    [
+        To Install From Existing Project
+
+                1. git clone  remote_repo_http_link
+                2. cd repo_name
+                3. uv sync
+    ]
+
+
+
+    
+
+### Using .env Files in Python
+Environment variables are essential for separating sensitive configuration data (like API keys, database URLs, etc.) from your codebase. The .env file is a simple way to manage these values during development. This document explains how to use .env files in Python with the python-dotenv package.
+
+#### What is a .env File?
+A .env file is a plaintext file containing key-value pairs representing environment variables. These are used to configure an application without hardcoding values in the source code.
+
+#### Example .env file:
+
+    API_KEY=abc123
+    DEBUG=True
+    DATABASE_URL=postgres://user:pass@localhost:5432/mydb
+
+#### Why Use .env Files?
+
+- Security: Keep secrets (like API keys) out of version control.
+- Portability: Share only required environment settings using a .env.example file.
+- Configurability: Easily switch between environments (development, testing, production).
+
+#### Step-by-Step Guide
+##### 1. Install python-dotenv
+To get started, install the package:
+
+    pip install python-dotenv
+
+##### 2. Create a .env File
+Add a .env file to your project root:
+
+    API_KEY=abc123
+    
+    DEBUG=True
+
+    DATABASE_URL=postgres://user:pass@localhost:5432/mydb
+
+    PORT=8080
+
+__Note: Never commit your .env file to version control. Add it to .gitignore:
+.env__
+
+##### 3. Load Environment Variables in Python
+Use load_dotenv() to read the file:
+```python
+from dotenv import load_dotenv
+import os
+load_dotenv()  # Loads the .env file automatically
+api_key = os.getenv("API_KEY")
+debug_mode = os.getenv("DEBUG")
+db_url = os.getenv("DATABASE_URL")
+port = os.getenv("PORT")
+print("API Key:", api_key)
+print("Debug Mode:", debug_mode)
+print("Database URL:", db_url)
+print("Port:", port)
+```
+
+##### 4. Type Conversion
+All values are strings by default. Convert them as needed:
+```python
+debug = os.getenv("DEBUG", "False").lower() == "true"
+port = int(os.getenv("PORT", 8000))
+```
+#### Advanced Usage
+
+##### Load from a Custom Path
+
+If your .env file is not in the root directory:
+```python
+from dotenv import load_dotenv
+from pathlib import Path
+env_path = Path("config/.env.dev")
+load_dotenv(dotenv_path=env_path)
+```
+##### Access with os.environ
+
+You can also use os.environ if you're sure the variable exists:
+```python
+api_key = os.environ["API_KEY"]  # Raises KeyError if not found
+```
+#### Using .env.example
+
+Create a .env.example to document the required environment variables:
+
+    API_KEY=your_api_key_here
+    DEBUG=True
+    DATABASE_URL=your_database_url
+    PORT=8000
+
+### Best Practices
+- Use .env only for non-sensitive dev/local configs. Use cloud-based secrets management for production (e.g., AWS Secrets Manager).
+- Avoid global mutable access. Instead, use a config class or function to encapsulate access to environment variables.
+- Use default fallbacks in your os.getenv() calls.
+
+### Integration with Popular Frameworks
+- FastAPI/Flask: Load .env before initializing the app.
+- LangGraph: Use .env to manage credentials, model configs, and tool endpoints.
+- Docker: Use --env-file .env to pass values when running containers.
+
+### Summary
+    Step	Action
+
+    1	Install python-dotenv
+    2	Create a .env file
+    3	Load it using load_dotenv()
+    4	Access values using os.getenv()
+    5	Convert types as necessary
+
+Using .env files in Python is a clean, safe, and effective way to manage configuration. For any production use, combine this with secure secrets management systems.
+
+## Day 2
+1. Make the function to call the model that will be used throughout the application development.
+2. Test the model.
+
+## Day 3
+Define the architecture of the state with respect to the application's purpose.
+
+## Day 4
+Define the planner node.
+- A planner has one job: take a goal and produce an ordered task list that an executor can work through without needing to think. The better the plan, the less the executor needs to improvise as improvisation is where agentic systems usually go wrong.
+
+### The Planner Prompt Structure
+The system prompt is doing most of the work. It needs four things:
+1. Role + output contract — tell the model what it is and exactly what format it must return. Structured output (JSON) is non-negotiable for the executor to consume reliably.
+2. Planning strategy — explicit instructions on how to decompose. Don't leave this implicit. Tell it to break on tool boundaries, to order by dependency, to flag unknowns.
+3. Task schema — define what a task looks like. Each task should carry: an id, a description, a tool or agent hint, depends_on (ids), and an expected_output description. That last field is underrated — it forces the planner to be concrete about what "done" means.
+4. Failure modes to avoid / Guardrails — explicitly tell it not to make tasks too granular (one LLM call per task is often the right granularity, not one line of code), not to plan beyond its knowledge horizon, and to flag ambiguity rather than assume
+
+### Task Structure
+    class Task(BaseModel):
+        id: str = Field(..., description="Unique identifier, e.g. 't1'")
+        description: str = Field(..., min_length=10)
+        tool_hint: ToolHint = ToolHint.OTHER
+        depends_on: list[str] = Field(default_factory=list)
+        expected_output: str = Field(..., min_length=5)
+        status: TaskStatus = TaskStatus.PENDING
+        result: Any = None
+        error: str | None = None
+
+### Plan Structure
+    class Plan(BaseModel):
+        tasks: list[Task] = Field(..., min_length=1)
+        goal_summary: str = Field(..., description="One-sentence restatement of the goal")
+        estimated_steps: int = Field(..., ge=1)
+### System Prompt Template 
+
+    SYSTEM_PROMPT_TEMPLATE = """
+    You are a planning agent in a plan-execute system. Your only job is to decompose a goal into an ordered list of discrete, executable tasks.
+    
+    ## Output format
+    Return ONLY a single valid JSON object — no prose, no markdown fences, no explanation.
+    
+    If the goal is clear, return:
+    {{
+    "plan": {{
+        "goal_summary": "<one-sentence restatement>",
+        "estimated_steps": <integer>,
+        "tasks": [
+        {{
+            "id": "t1",
+            "description": "<specific, actionable description>",
+            "tool_hint": "<{tool_hints}>",
+            "depends_on": [],
+            "expected_output": "<concrete description of what 'done' looks like>"
+        }}
+        ]
+    }}
+    }}
+    
+    If the goal is ambiguous or missing required context, return:
+    {{
+    "clarification": "<single, specific question>"
+    }}
+    
+    ## Planning rules
+    1. Break at tool boundaries — each task uses exactly one tool or capability.
+    2. Order by dependency. Earlier tasks must produce outputs consumed by later tasks.
+    3. Each task must be self-contained: its description must be unambiguous to an executor that has not read the goal.
+    4. The `expected_output` field is mandatory and must be concrete — not "the result" but "a JSON array of {{'url': ..., 'title': ...}} with 5 entries".
+    5. Consolidate sequential same-tool steps with no decision between them.
+    6. Available tools: {tool_hints}.
+    7. Do not plan steps that require information you do not have — include a discovery task first, or ask for clarification.
+    8. Never combine planning with execution. Return the plan only.
+    """
+
+## Day 5
+Define the Tools
+
+1. Create the necessary tools.
+2. Create a markdown (.md) file which contains all the necessary metadata regarding all the tools. This .md file will be used by the planner for getting the details about the tools.
+3. Create a tool_registry_reader python file with a get_tools_info function which can provide the contents of the .md file when called.
+
+### Python Imports Across Subdirectories
+
+#### Setup
+For a structure like:
+```
+dir1/
+    __init__.py
+    dir1.1/
+        __init__.py
+        fileA.py
+    fileB.py
+```
+To use `func` from `fileB.py` inside `fileA.py`:
+
+### Option 1: Relative import (clean, recommended)
+```python
+# in fileA.py
+from ..fileB import func
+```
+Requires `__init__.py` in each directory, and must be run as a module — not directly.
+
+### Option 2: Run as a module (fixes relative import errors)
+```bash
+python -m dir1.dir1_1.fileA
+```
+Running with `-m` from the project root tells Python the package context, making relative imports work.
+
+### Option 3: sys.path hack (when running file directly)
+```python
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from fileB import func
+```
+Manually adds the parent directory to Python's search path. No `__init__.py` needed.
+
+### Option 4: Root-level entry point (for proper apps)
+Create a `main.py` at the project root and run everything from there.
+
+---
+
+### Common Error: `ImportError: attempted relative import with no known parent package`
+**Cause:** Running `fileA.py` directly (e.g. `python fileA.py`) — Python doesn't know it's part of a package.  
+**Fix:** Use `python -m dir1.dir1_1.fileA` instead, or use the `sys.path` hack.
+
+---
+
+### What is `__init__.py`?
+- Marks a directory as a Python **package**, enabling imports from it.
+- Can be completely empty — its presence is what matters.
+- Without it, Python (3.3+) treats the directory as a **namespace package** (implicit), but relative imports still won't work without it.
+
+---
+
+### Dot notation in relative imports
+| Syntax | Meaning |
+|---|---|
+| `from .module import x` | Same directory |
+| `from ..module import x` | One level up |
+| `from ...module import x` | Two levels up |
+
+---
+
+### Absolute vs Relative imports
+
+**Absolute** — full path from project root (preferred for clarity):
+```python
+from dir1.fileB import func
+```
+
+**Relative** — relative to current file's location:
+```python
+from ..fileB import func   # go one level up, then import fileB
+```
+
+Absolute imports work anywhere; relative imports only work inside packages.
+
+---
+
+### Importing the whole module vs a specific function
+```python
+import dir1.fileB                # import whole module
+dir1.fileB.func()                # call with full path
+
+from dir1.fileB import func      # import just the function
+func()                           # call directly
+
+from dir1.fileB import func as f # alias to avoid name conflicts
+f()
+```
+
+---
+
+### Quick decision guide
+| Situation | Best approach |
+|---|---|
+| Proper project with packages | Absolute import + `__init__.py` |
+| Inside a package, sibling/parent file | Relative import (`..`) |
+| Running a file directly | `sys.path` hack |
+| Large app with a clear entry point | `main.py` at root + `python -m` |
+
+
+## Day 6
+Define plan reviewers.
+
+1. Define plan feasibility checker.
+2. Define plan safty critic.
+
+### Plan Feasibility Checker
+1. Checks whether the plan is feasible.
+2. Checks whether the plan is able to satisfy the user query.
+3. Checks whether the plan is minimal.
+
+### Plan Safty Critic
+1. Checks whether the plan in itself can become harmful to the user/system.
+2. Checks whether any step within the plan can become harmful to the user/system.
+
+### Plan Reviewer
+Checks the results of Plan Feasibility Checker & Plan Safty Critic and decides whether to;
+
+1. Execute the plan
+2. Pass the current plan and the issues from review to replanner for planning again.
+
+
+## Day 7
+Define the RePlanner node
+The RePlanner is the one which is called when there are issues with the current plan and the reviewer decided that the current plan must be changed/modified for the safe fullfilment of the user's query.
+### The RePlanner takes as input;
+1. User query
+2. The current plan
+3. Reviews from Plan Feasibility Checker & Plan Safty Critic
+4. Human opinions/suggestions if any.
+
+
+## Day 8
+Define the Executor node
+The Executor is the one which takes the steps prepared by the planner and then executes them one by one (or parallel if programmed to).
+If the direct tool call fails, it should be redirected to a ReAct agent which can handle tool executions.
+
+* There may be tasks which depends on previous tasks. For those, the results of the previous tasks must be fetched.
+* Tool results could be stored in the state or in a persistant memory.
+* A function or tool which takes the dependancies (task id) as input and gets the result of the dependancies (previous task) is necessary.
+
+### Concerns while building execution node
+1. Must validate whether the tool arguments are having the correct format or not.
+2. Must verify whether the tool execution went correctly or not.
+3. Must asserten whether the tool results are having the right format or not.
+
+### Executor friendly tool returns
+Gave a unified structure for tool returns.
+```python
+return {
+        "status":status,
+        "content":content,
+        "error":str(error),
+        "metadata":{
+            "metadata_1":metadata_1,
+            "metadata_2":metadata_2,
+            "metadata_3":metadata_3
+            }
+        }
+```
+
+This structure will be helpful for automated executors.
+
+### Added a get_react_agent function which can handle tool calls incase normal direct tool call fails.
+* For this react agent, the tool information must be given as 'structuredtools' format.
+```python
+from langchain_core.tools import StructuredTool
+tool = StructuredTool.from_function(
+                func=function_name,
+                name=module_name,
+                description=function_description
+            )
+```
+* But in our case, as the tools are not considered hard coded and are taking an automated approach, we'll use 
+module=import_module(f"src.tools.{module_name}", package=_\_package__)
+    * package=_\_package__ tells Python where the relative import should start from.
+    * In Python, \_\_package__ is a special attribute automatically set by the import system to indicate the package context of a module.It’s mainly used to help Python resolve relative imports correctly. It tells Python the package name that the current module belongs to.
+
+So,
+```python
+tools = []
+file_path = os.path.join(os.getcwd(),"src", "tools")
+for file in os.listdir(path=file_path):
+    if file.endswith(".py"):
+        module_name=file.split(".py")[0]
+        module=import_module(f"src.tools.{module_name}", package=__package__)
+        tool = StructuredTool.from_function(
+            func=module.run,
+            name=module.__name__, # name=module_name in our case
+            description=module.run.__doc__
+        )
+        tools.append(tool)
+```
+
+
+## Day 9
+Create a conditional edge which ends the workflow if the plan is completed. Otherwise, the executor must be called again until all the tasks are completed.
+
+Move the conditional edges to a single seperate file inside src. 
+
+
+## Day 10
+Add observability via LangSmith.
+
+1. Create an account in LangSmith (https://smith.langchain.com/).
+2. Create an 'Application' in LangSmith
+3. Copy the api-key from there.
+4. Inside the .env file, add these environmental variables.
+
+    * LANGSMITH_TRACING=true
+    * LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+    * LANGSMITH_API_KEY=\<the api-key copied earlier>
+    * LANGSMITH_PROJECT=\<name of the application>
+
+
+For tracing the custom tools or functions,
+```python
+    from langsmith import traceable
+
+    @traceable
+    def my_function():
+        ...
+```
+
+When building agents:
+    1. Build graph
+            ↓
+    2. Enable tracing
+            ↓
+    3. Run graph
+            ↓
+    4. Inspect trace
+            ↓
+    5. Fix issues
+            ↓
+    6. Create dataset
+            ↓
+    7. Run evaluation
+            ↓
+    8. Deploy
+            ↓
+    9. Monitor production
+
+
+## Day 11
+Impliment resumability.
+
+### Usefull links
+Resumability: https://chatgpt.com/s/t_6a311eda65508191b8330fb97c727253
+
+Resumability with PostgreSQL: 
+
+1. Install and setup PostgreSQL.
+2. Create helper functions for table creation, adding data to the table (storing data), table modification (updating data), table fetching (reading data), deleting specific data (data deletion), deleting the table.
+3. Save checkpoints to PostgreSQL.
+4. Load the checkpoint when required.
+
+or 
+
+Use sqlite for checkpointing
+
+* uv add langgraph-checkpoint-sqlite
+
+```python
+from langgraph.checkpoint.sqlite import SqliteSaver
+memory = SqliteSaver.from_conn_string(
+    "checkpoints.db"
+)
+graph = graph_builder.compile(
+    checkpointer=memory
+)
+
+config = {
+    "configurable": {
+        "thread_id": "user_123"
+    }
+}
+graph.invoke(
+    {"message": "hello"},
+    config=config
+)
+```
+
+__Resumability means the ability of an agent workflow to continue execution from a previously saved state instead of restarting from the beginning.__
+
+Imagine:
+
+    Step 1 → Step 2 → Step 3 → Step 4 → Step 5
+
+Suppose Step 4 crashes.
+
+Without resumability:
+
+    Restart:
+    Step 1 → Step 2 → Step 3 → Step 4 → Step 5
+
+With resumability:
+
+    Resume:
+    Step 4 → Step 5
+
+Many people think:
+
+```python
+state = load_from_db()
+```
+
+is resumability. It isn't. That's only persistence.
+
+Resumability requires:
+```python
+State
++
+Execution Position
++
+Pending Interrupts
++
+Checkpoint History
+```
+LangGraph's Postgres checkpointer stores all of that.
+
+### In more details, the system needs:
+
+#### 1. Workflow State
+
+Example:
+
+    {
+        "query": "Find competitors",
+        "competitors": [...],
+        "report": "...",
+        "approved": False
+    }
+
+This is usually called:
+
+state
+checkpoint
+snapshot
+#### 2. Current Position
+
+Need to know:
+
+    Currently at node:
+    generate_report
+
+or
+
+    Currently at step 17
+#### 3. Intermediate Results
+
+Don't recompute:
+
+    Web search results
+    Embeddings
+    Tool outputs
+    Database queries
+
+Store them.
+
+### Important
+The state __MUST be serializable__ for storing as checkpoint.
+It will be unserializable if; 
+- BaseModel AgentState is having objects of custom classes in it. Eg:- AgentState having PlannerState in it.
+- Any node returns entire AgentState if above point is true.
+- plan_review: list[PlanReviewerConfidences] = [Field(default_factory=PlanReviewerConfidences)] => Wrong
+
+     plan_review: list[PlanReviewerConfidences] = Field(default_factory=list) => Correct
+
+
+## Day 12
+Add Human In The Loop (HITL)
+
+```python
+from langgraph.types import interrupt
+answer = interrupt( # The variable name can be given as anything.
+    {
+        "approval": "Approve this action?" # This need not be a dict. This can be anything which is serializable.
+    }
+)
+```
+This could be used for adding the HITL.
+
+The graph execution will stop at this interrupt.
+
+For resuming, call the graph with Command(resume="value for the variable 'answer' mentioned in the interrupt"). The given value will be stored in the variable 'answer' mentioned in the interrupt.
+
+```python
+from langgraph.types import Command
+graph.invoke(
+    Command(resume="question approvedd.."),
+    config=config
+)
+```
+Note: The node in which the interrupt is set up will run again from start when the agent resumes.
+
+```python
+some_funcction_1()
+print("Print_1")
+answer = interrupt(...)
+some_funcction_2()
+print("Print_2")
+```
+
+In this case, some_funcction_1() and Print_1 will happen twice;
+1. Before interrupt
+2. After resume happens via Command()
+
+But, some_funcction_2() and Print_2 will happen only once; after resume happens via Command(). They won't happen before the interrupt as the graph is interrupted before their lines.
+
+
+## Day 13
+Deployment using FastAPI
+
+1. Import FastAPI
+2. Create an instance (usually named as 'app' or 'main', eventhough any name could be assigned).
+3. Add wrapper @app.get("endpoint") # get/post/webhook
+```python
+from fastapi import FastAPI
+app = FastAPI()
+
+@app.get("endpoint")
+def func_name():
+
+```
+
+
+## Day 14
+Adding a simple UI with Streamlit
+
+### Usefull links
+Streamlit Basics: https://chatgpt.com/share/6a33582e-caf4-83ee-838c-67a5e9a6190e
+
+Streamlit-FastAPI integration: https://chatgpt.com/share/6a3358fc-90b4-83ee-a74b-1780cac86849
+
+Basically, this is not an integration. Streamlit is just using the endpoint of the FastAPI program inside it.
+1. Run the FastAPI program.
+2. Call the FastAPI endpoint inside Streamlit program.
+3. Run the Streamlit program.
+
+
+## Day 15
+Adding 'fast track' to bypass plan-execute for trivial tasks.
+
+The usage of plan-execute is token-wise expensive and overly time consuming.
+For trivial tasks like answering a simple question which does not require any tool execution, LLMs could directly give the reply instead of going through plan-execute.
+For these exact reasons, a 'fast-track' path which bypasses the plan-execute is created where planner directly gives the reply for the users' query without making an exclusive plan for it.
+
+This could be implemented by simple prompting itself without the need of a specialized task catogorizer agent.
+
+Eg:- 
+
+    You have 2 modes;
+    1. Non-trivial task mode: The user's query requires to do/perform in this computer or is something related to this computer.
+    2. Trivial task mode: The user is asking for some general knowledge.
+
+    If the user's query if a trivial task:
+        Directly reply to the user in the format {{"final_output":{{your reply in markdown format}}}}. Do not add anything extra. No greetings are required.
+
+    Else:
+        You are a planning agent in a plan-execute system ...
+
+
+## Day 16
+Add Asynchronisity
+
+If the program is synchronous, when multiple users access the same application, the 1st user's query will be taken in and the other users will've to wait till the applicaation finishes executing the 1st user's query.
+
+To avoid this delema, the program could be made asynchronous. This way, multiple requests could be handled concurent-like.
